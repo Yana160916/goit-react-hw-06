@@ -1,3 +1,5 @@
+import { useDispatch } from 'react-redux';
+import { addContact } from '../../redux/contactsSlice.js';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
@@ -14,23 +16,31 @@ const validationSchema = Yup.object({
     .required('Required'),
 });
 
-function ContactForm({ onAddContact }) {
+function ContactForm() {
+  const dispatch = useDispatch();
+
+  const handleSubmit = (values, { resetForm }) => {
+    dispatch(addContact({ name: values.name, number: values.number }));
+    resetForm();
+  };
+
   return (
     <Formik
       initialValues={{ name: '', number: '' }}
       validationSchema={validationSchema}
-      onSubmit={(values, { resetForm }) => {
-        onAddContact(values.name, values.number);
-        resetForm();
-      }}
+      onSubmit={handleSubmit}
     >
-          <Form className={styles.formContainer}> Name
-        <Field type="text" name="name" placeholder="" />
-        <ErrorMessage name="name" component="div" />
-        Number phone
-        <Field type="text" name="number" placeholder="" />
-        <ErrorMessage name="number" component="div" />
-
+      <Form className={styles.formContainer}>
+        <div>
+          <label htmlFor="name">Name</label>
+          <Field type="text" id="name" name="name" />
+          <ErrorMessage name="name" component="div" />
+        </div>
+        <div>
+          <label htmlFor="number">Number phone</label>
+          <Field type="text" id="number" name="number" />
+          <ErrorMessage name="number" component="div" />
+        </div>
         <button type="submit">Add Contact</button>
       </Form>
     </Formik>
